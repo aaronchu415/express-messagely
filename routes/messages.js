@@ -1,3 +1,9 @@
+const express = require('express')
+const jwt = require("jsonwebtoken");
+const User = require('../models/user')
+const auth = require("../middleware/auth")
+const msg = require("../models/message")
+let router = new express.Router()
 /** GET /:id - get detail of message.
  *
  * => {message: {id,
@@ -10,6 +16,11 @@
  * Make sure that the currently-logged-in users is either the to or from user.
  *
  **/
+router.get("/:id", auth.authenticateJWT, auth.ensureLoggedIn, auth.validUser, async function(req, res, next) {
+    let response = await msg.get(req.params.id)
+    return res.json({message: response})
+})
+
 
 
 /** POST / - post message.
@@ -18,7 +29,10 @@
  *   {message: {id, from_username, to_username, body, sent_at}}
  *
  **/
-
+router.post("/", auth.authenticateJWT, auth.ensureLoggedIn, async function(req, res, next) {
+    let response = await msg.create({ from_username: req.user.username, to_username: req.body.to_username, body: req.body.body})
+    return res.json({message: response})
+})
 
 /** POST/:id/read - mark message as read:
  *
@@ -27,4 +41,10 @@
  * Make sure that the only the intended recipient can mark as read.
  *
  **/
+router.post("/:id/read", auth.authenticateJWT, auth.ensureLoggedIn, auth.recepientOnly, async function(req, res, next) {
+    let response = await msg.markRead(req.params.id)
+    return res.json({message: response})
+})
 
+
+module.exports = router

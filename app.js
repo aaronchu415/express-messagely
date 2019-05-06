@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 // allow connections to all routes from any browser
 app.use(cors());
 
-app.use(authenticateJWT);
+// app.use(authenticateJWT);
 /** routes */
 
 const authRoutes = require("./routes/auth");
@@ -23,13 +23,13 @@ const userRoutes = require("./routes/users");
 const messageRoutes = require("./routes/messages");
 
 app.use("/auth", authRoutes);
-// app.use("/users", userRoutes);
-// app.use("/messages", messageRoutes);
+app.use("/users", userRoutes);
+app.use("/messages", messageRoutes);
 
 /** 404 handler */
 
 app.use(function (req, res, next) {
-  const err = new ExpressError("Not Found", 404);
+  const err = new ExpressError("Not Found Error", 404);
   return next(err);
 });
 

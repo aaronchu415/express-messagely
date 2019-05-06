@@ -60,9 +60,9 @@ class User {
   static async updateLoginTimestamp(username) {
 
     //update records at username
-    const result = db.query(
+    const result = await db.query(
       `UPDATE users SET last_login_at=current_timestamp WHERE username=$1 RETURNING last_login_at`, [username])
-
+    
     let userLastLoginAt = result.rows[0];
 
     if (!userLastLoginAt) {
