@@ -3,6 +3,11 @@ const jwt = require("jsonwebtoken");
 const User = require('../models/user')
 const auth = require("../middleware/auth")
 const msg = require("../models/message")
+const { accountSid, authToken } = require("../config")
+const clientTwilio = require("twilio")(accountSid, authToken)
+
+
+
 let router = new express.Router()
 /** GET /:id - get detail of message.
  *
@@ -31,6 +36,9 @@ router.get("/:id", auth.authenticateJWT, auth.ensureLoggedIn, auth.validUser, as
  **/
 router.post("/", auth.authenticateJWT, auth.ensureLoggedIn, async function(req, res, next) {
     let response = await msg.create({ from_username: req.user.username, to_username: req.body.to_username, body: req.body.body})
+    console.log("Got to this route")
+    clientTwilio.messages
+        .create({from: '+16507537282', body: "You got a message!", to: "+16507733650"})
     return res.json({message: response})
 })
 
